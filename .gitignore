@@ -1,8 +1,5 @@
 # .gitignore
 
-# Ignore configuration files that may contain sensitive information
-/php/utils/database.php
-
 # Ignore all text files (like your raw data files)
 *.txt
 
@@ -17,3 +14,5 @@ logs/*
 # Ignore package dependency directories (Node.js / PHP Composer)
 node_modules/
 vendor/
+
+CP476B-2023SpringGroup Project Requirements.pdf
