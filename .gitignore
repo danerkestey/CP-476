@@ -1,0 +1,19 @@
+# .gitignore
+
+# Ignore configuration files that may contain sensitive information
+/php/utils/database.php
+
+# Ignore all text files (like your raw data files)
+*.txt
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore cache and log files
+cache/*
+logs/*
+
+# Ignore package dependency directories (Node.js / PHP Composer)
+node_modules/
+vendor/
