@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Inventory App</title>
+    <link rel="stylesheet" type="text/css" href="../css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to the Inventory App</h1>
+        <div class="controls">
+            <!-- Here you can place any buttons to trigger actions (e.g., delete, update...) -->
+            <button id="refresh">Refresh</button>
+        </div>
+        <table id="inventoryTable">
+            <thead>
+                <tr>
+                    <th>Product ID</th>
+                    <th>Product Name</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Status</th>
+                    <th>Supplier Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Rows will be inserted here dynamically with JavaScript -->
+            </tbody>
+        </table>
+    </div>
+    <script src="../js/app.js"></script>
+</body>
+</html>
