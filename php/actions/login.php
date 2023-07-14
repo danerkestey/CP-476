@@ -13,24 +13,16 @@ $username = $_POST['username'];
 $password = $_POST['password'];
 
 try {
-    // Prepare a SQL statement to retrieve the user from the UserTable
-    $stmt = $pdo->prepare("SELECT * FROM UserTable WHERE username = :username");
+    // Initialize a PDO connection using the POSTed MySQL credentials
+    $pdo = getConnection($username, $password);
 
-    // Bind the parameter and execute the statement
-    $stmt->bindValue(':username', $username, PDO::PARAM_STR);
-    $stmt->execute();
-
-    // Fetch user
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    // Check if the user was found and the password is correct
-    if ($user && password_verify($password, $user['password'])) {
-        session_start();
-        $_SESSION['user_id'] = $user['id'];
-        echo json_encode(['status' => 'success']);
-    } else {
-        echo json_encode(['status' => 'error', 'message' => 'Invalid username or password']);
-    }
+    // If the connection is successful, start the session and store username and password in it
+    session_start();
+    $_SESSION['username'] = $username; // Store username in session
+    $_SESSION['password'] = $password; // Store password in session
+    echo json_encode(['status' => 'success']);
+    
 } catch (PDOException $e) {
     echo json_encode(['status' => 'error', 'message' => 'Database error: ' . $e->getMessage()]);
 }
+?>

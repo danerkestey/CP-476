@@ -1,12 +1,13 @@
 <?php
+// Include the database connection file
 require_once 'database.php';
 
 try {
     // Check if the Supplier table exists
     $stmt = $pdo->prepare("SHOW TABLES LIKE 'SupplierTable'");
     $stmt->execute();
-    
-    // If the table does not exist, create it
+
+    // If the Supplier table does not exist, create it
     if($stmt->rowCount() == 0) {
         // SQL statement to create Supplier table
         $sql = "CREATE TABLE SupplierTable (
@@ -26,7 +27,7 @@ try {
     $stmt = $pdo->prepare("SHOW TABLES LIKE 'ProductTable'");
     $stmt->execute();
 
-    // If the table does not exist, create it
+    // If the Product table does not exist, create it
     if($stmt->rowCount() == 0) {
         // SQL statement to create Product table
         $sql = "CREATE TABLE ProductTable (
@@ -44,37 +45,30 @@ try {
         $pdo->exec($sql);
         echo "Product table created successfully\n";
     }
-    // Check if the UserTable exists
-    $stmt = $pdo->prepare("SHOW TABLES LIKE 'UserTable'");
+
+    // Check if the Inventory table exists
+    $stmt = $pdo->prepare("SHOW TABLES LIKE 'InventoryTable'");
     $stmt->execute();
 
-    // If the table does not exist, create it
+    // If the Inventory table does not exist, create it
     if($stmt->rowCount() == 0) {
-        // SQL statement to create UserTable
-        $sql = "CREATE TABLE UserTable (
-            id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-            username VARCHAR(255) NOT NULL UNIQUE,
-            password VARCHAR(255) NOT NULL
+        // SQL statement to create Inventory table
+        $sql = "CREATE TABLE InventoryTable (
+            ProductID INT(11) UNSIGNED,
+            ProductName VARCHAR(255) NOT NULL,
+            Quantity INT(11) NOT NULL,
+            Price DECIMAL(10, 2) NOT NULL,
+            Status CHAR(1),
+            SupplierName VARCHAR(255) NOT NULL
         )";
 
         // Execute the statement
         $pdo->exec($sql);
-        echo "UserTable created successfully\n";
-
-        // Populate the UserTable with the root user
-        $rootPassword = password_hash('password', PASSWORD_DEFAULT);  // Hash the root password
-
-        $stmt = $pdo->prepare("INSERT INTO UserTable (username, password) VALUES (:username, :password)");
-        $stmt->execute([
-            ':username' => 'root',
-            ':password' => $rootPassword,
-        ]);
-
-        echo "Root user created\n";
+        echo "Inventory table created successfully\n";
     }
 
 } catch(PDOException $error) {
-    // In case of error creating the tables, output the error
+    // In case of an error when creating the tables, output the error
     echo $sql . "\n" . $error->getMessage();
 }
 
