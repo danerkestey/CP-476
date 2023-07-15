@@ -44,8 +44,8 @@ With the MySQL service running, you can now create and populate your database ta
 Navigate to the directory containing your PHP scripts in the terminal and run the following commands:
 
 ```bash
-php createTables.php
-php populateTables.php
+php php/utils/createTables.php <root // or whatever is yours> <password // or whatever is yours>
+php php/utils/populateTables.php  <root // or whatever is yours> <password // or whatever is yours>
 ```
 
 Please ensure that the paths to your PHP scripts are correct if they are not located in the current directory.

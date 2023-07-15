@@ -1,7 +1,17 @@
 <?php
-require_once 'database.php';  // Include the database connection file
+
+if ($argc != 3) {
+    die("Usage: php populateTables.php <mysql_username> <mysql_password>\n");
+}
+
+$username = $argv[1];
+$password = $argv[2];
+
+require_once 'database.php';
 
 try {
+    $pdo = getConnection($username, $password);
+
     // Disable foreign key checks to allow for clearing out the tables
     $pdo->exec("SET FOREIGN_KEY_CHECKS = 0");
 
@@ -19,15 +29,14 @@ try {
     }
 
     // Prepare the SQL insert statement for the SupplierTable
-    $stmt = $pdo->prepare("INSERT INTO SupplierTable (SupplierID, SupplierName, Address, Phone, Email) VALUES (:SupplierID, :SupplierName, :Address, :Phone, :Email)");
+    $stmt = $pdo->prepare("INSERT INTO SupplierTable (SupplierName, Address, Phone, Email) VALUES (:SupplierName, :Address, :Phone, :Email)");
 
     while (($row = fgetcsv($file)) !== false) {  // Read data from the CSV file line by line
         // Bind the parameters for the SQL insert statement
-        $stmt->bindValue(':SupplierID', $row[0], PDO::PARAM_INT);
-        $stmt->bindValue(':SupplierName', $row[1], PDO::PARAM_STR);
-        $stmt->bindValue(':Address', $row[2], PDO::PARAM_STR);
-        $stmt->bindValue(':Phone', $row[3], PDO::PARAM_STR);
-        $stmt->bindValue(':Email', $row[4], PDO::PARAM_STR);
+        $stmt->bindValue(':SupplierName', $row[0], PDO::PARAM_STR);
+        $stmt->bindValue(':Address', $row[1], PDO::PARAM_STR);
+        $stmt->bindValue(':Phone', $row[2], PDO::PARAM_STR);
+        $stmt->bindValue(':Email', $row[3], PDO::PARAM_STR);
 
         // Execute the insert statement
         $stmt->execute();
@@ -41,21 +50,20 @@ try {
     }
 
     // Prepare the SQL insert statement for the ProductTable
-    $stmt = $pdo->prepare("INSERT INTO ProductTable (ProductID, ProductName, Description, Price, Quantity, Status, SupplierID) VALUES (:ProductID, :ProductName, :Description, :Price, :Quantity, :Status, :SupplierID)");
+    $stmt = $pdo->prepare("INSERT INTO ProductTable (ProductName, Description, Price, Quantity, Status, SupplierID) VALUES (:ProductName, :Description, :Price, :Quantity, :Status, :SupplierID)");
 
     while (($row = fgetcsv($file)) !== false) {  // Read data from the CSV file line by line
         // Bind the parameters for the SQL insert statement
-        $stmt->bindValue(':ProductID', $row[0], PDO::PARAM_INT);
-        $stmt->bindValue(':ProductName', $row[1], PDO::PARAM_STR);
-        $stmt->bindValue(':Description', $row[2], PDO::PARAM_STR);
+        $stmt->bindValue(':ProductName', $row[0], PDO::PARAM_STR);
+        $stmt->bindValue(':Description', $row[1], PDO::PARAM_STR);
         
         // Remove the dollar sign from the price
-        $price = str_replace('$', '', $row[3]);
+        $price = str_replace('$', '', $row[2]);
         $stmt->bindValue(':Price', $price, PDO::PARAM_STR);
         
-        $stmt->bindValue(':Quantity', $row[4], PDO::PARAM_INT);
-        $stmt->bindValue(':Status', $row[5], PDO::PARAM_STR);
-        $stmt->bindValue(':SupplierID', $row[6], PDO::PARAM_INT);
+        $stmt->bindValue(':Quantity', $row[3], PDO::PARAM_INT);
+        $stmt->bindValue(':Status', $row[4], PDO::PARAM_STR);
+        $stmt->bindValue(':SupplierID', $row[5], PDO::PARAM_INT);
 
         // Execute the insert statement
         $stmt->execute();
@@ -65,7 +73,7 @@ try {
     // Begin populating Inventory table
     // SQL insert statement that populates InventoryTable based on data in ProductTable and SupplierTable
     $sql = "INSERT INTO InventoryTable (ProductID, ProductName, Quantity, Price, Status, SupplierName) 
-    SELECT p.ProductID, p.ProductName, p.Quantity, p.Price, p.Status, s.SupplierName
+    SELECT p.UniqueID, p.ProductName, p.Quantity, p.Price, p.Status, s.SupplierName
     FROM ProductTable p
     JOIN SupplierTable s ON p.SupplierID = s.SupplierID";
 
@@ -77,6 +85,7 @@ try {
 
 } catch (Exception $e) {
     // In case of any errors, output the error message
-    echo 'Caught exception: ',  $e->getMessage(), "\n";
+    echo $e->getMessage();
 }
+
 ?>

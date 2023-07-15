@@ -1,8 +1,18 @@
 <?php
 // Include the database connection file
+
+if ($argc != 3) {
+    die("Usage: php createTables.php <mysql_username> <mysql_password>\n");
+}
+
+$username = $argv[1];
+$password = $argv[2];
+
 require_once 'database.php';
 
 try {
+    $pdo = getConnection($username, $password);
+
     // Check if the Supplier table exists
     $stmt = $pdo->prepare("SHOW TABLES LIKE 'SupplierTable'");
     $stmt->execute();
@@ -31,7 +41,7 @@ try {
     if($stmt->rowCount() == 0) {
         // SQL statement to create Product table
         $sql = "CREATE TABLE ProductTable (
-            ProductID INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+            UniqueID INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
             ProductName VARCHAR(255) NOT NULL,
             Description TEXT,
             Price DECIMAL(10, 2) NOT NULL,
