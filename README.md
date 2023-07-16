@@ -37,6 +37,40 @@ sudo service apache2 status
 
 The system should report that the Apache service is running.
 
+### 2.1. Configure Apache Server
+
+Initially, it might just load the index file in the `/var/www/html` directory. You will need to make some changes in order to run it properly.
+
+First, ensure you have the `.htaccess` file in the **root directory of the project.** If not, create it and add the following line:
+
+```plaintext
+DirectoryIndex login.php
+```
+
+This ensures that the `login.php` file is loaded first when you access the root directory.
+
+Next, you will need to modify the `apache2.conf` file, which needs super user privileges. Open a new terminal and type the following command:
+
+```bash
+sudo nano /etc/apache2/apache2.conf
+```
+
+This will open the nano editor, where you scroll down and edit your `<Directory "/var/www/html">` block to look like this:
+
+```apache
+<Directory "/var/www/html">
+    Options Indexes FollowSymLinks
+    AllowOverride All
+    Require all granted
+</Directory>
+```
+
+After, save and restart Apache and you should be good to go.
+
+```bash
+sudo service apache2 restart
+```
+
 ## 3. Create and Populate the Database
 
 With the MySQL service running, you can now create and populate your database tables. This guide assumes that you have already created `createTables.php` and `populateTables.php` scripts.
@@ -59,7 +93,7 @@ Your PHP files should be located in Apache's default document root, which is typ
 You can then open a web browser and type the following URL to access your login page:
 
 ```plaintext
-http://localhost/login.php
+http://localhost/CP-476/
 ```
 
 You will now be able to log into the application by using your MySQL credentials. In this scenario, the username would be `root` and the password `password`.

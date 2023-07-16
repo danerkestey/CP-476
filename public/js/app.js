@@ -6,12 +6,12 @@ $(document).ready(function() {
     function refreshData() {
         $.get('../php/actions/search.php', function(data) {
             // Clear the table
-            $('#productTable tbody').empty();
+            $('#inventoryTable tbody').empty();
             // Parse the data that came back from the server
             let rows = JSON.parse(data);
             // For each row, append it to the table
             rows.forEach(function(row) {
-                $('#productTable tbody').append(
+                $('#inventoryTable tbody').append(
                     `<tr>
                         <td>${row.ProductID}</td>
                         <td>${row.ProductName}</td>
@@ -29,5 +29,5 @@ $(document).ready(function() {
     refreshData();
 
     // Call the refreshData function when the Refresh button is clicked
-    $('#refreshButton').click(refreshData);
+    $('#refresh').click(refreshData);
 });

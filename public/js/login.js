@@ -15,15 +15,18 @@ $(document).ready(function() {
         }
 
         // If validation passes, send a POST request to the login PHP script
-        $.post('../../php/actions/login.php', {username: username, password: password}, function(data) {
-            // Handle response from the server
-            if (data === 'success') {
+        $.post('../../php/actions/login.php', {username: username, password: password}, function(response) {
+            console.log(response);
+            // Parse the response JSON
+            var data = JSON.parse(response);
+            console.log(data);
+            if (data.status === 'success') {
                 // If login successful, redirect to the app page
-                window.location.href = 'app.html';
+                window.location.href = '/CP-476/public/html/app.html';
             } else {
                 // If login failed, display an error message
                 $('#message').text('Login failed. Please check your username and password and try again.');
             }
-        });
+        }, "json"); // JSON response
     });
 });
