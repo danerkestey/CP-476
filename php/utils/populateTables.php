@@ -29,14 +29,15 @@ try {
     }
 
     // Prepare the SQL insert statement for the SupplierTable
-    $stmt = $pdo->prepare("INSERT INTO SupplierTable (SupplierName, Address, Phone, Email) VALUES (:SupplierName, :Address, :Phone, :Email)");
+    $stmt = $pdo->prepare("INSERT INTO SupplierTable (SupplierID, SupplierName, Address, Phone, Email) VALUES (:SupplierID, :SupplierName, :Address, :Phone, :Email)");
 
     while (($row = fgetcsv($file)) !== false) {  // Read data from the CSV file line by line
         // Bind the parameters for the SQL insert statement
-        $stmt->bindValue(':SupplierName', $row[0], PDO::PARAM_STR);
-        $stmt->bindValue(':Address', $row[1], PDO::PARAM_STR);
-        $stmt->bindValue(':Phone', $row[2], PDO::PARAM_STR);
-        $stmt->bindValue(':Email', $row[3], PDO::PARAM_STR);
+        $stmt->bindValue(':SupplierID', $row[0], PDO::PARAM_INT);
+        $stmt->bindValue(':SupplierName', $row[1], PDO::PARAM_STR);
+        $stmt->bindValue(':Address', $row[2], PDO::PARAM_STR);
+        $stmt->bindValue(':Phone', $row[3], PDO::PARAM_STR);
+        $stmt->bindValue(':Email', $row[4], PDO::PARAM_STR);
 
         // Execute the insert statement
         $stmt->execute();
@@ -54,16 +55,16 @@ try {
 
     while (($row = fgetcsv($file)) !== false) {  // Read data from the CSV file line by line
         // Bind the parameters for the SQL insert statement
-        $stmt->bindValue(':ProductName', $row[0], PDO::PARAM_STR);
-        $stmt->bindValue(':Description', $row[1], PDO::PARAM_STR);
+        $stmt->bindValue(':ProductName', $row[1], PDO::PARAM_STR);
+        $stmt->bindValue(':Description', $row[2], PDO::PARAM_STR);
         
         // Remove the dollar sign from the price
-        $price = str_replace('$', '', $row[2]);
+        $price = str_replace('$', '', $row[3]);
         $stmt->bindValue(':Price', $price, PDO::PARAM_STR);
         
-        $stmt->bindValue(':Quantity', $row[3], PDO::PARAM_INT);
-        $stmt->bindValue(':Status', $row[4], PDO::PARAM_STR);
-        $stmt->bindValue(':SupplierID', $row[5], PDO::PARAM_INT);
+        $stmt->bindValue(':Quantity', $row[4], PDO::PARAM_INT);
+        $stmt->bindValue(':Status', $row[5], PDO::PARAM_STR);
+        $stmt->bindValue(':SupplierID', $row[6], PDO::PARAM_INT);
 
         // Execute the insert statement
         $stmt->execute();
@@ -71,15 +72,17 @@ try {
     fclose($file);  // Close the CSV file
 
     // Begin populating Inventory table
-    // SQL insert statement that populates InventoryTable based on data in ProductTable and SupplierTable
-    $sql = "INSERT INTO InventoryTable (ProductID, ProductName, Quantity, Price, Status, SupplierName) 
-    SELECT p.UniqueID, p.ProductName, p.Quantity, p.Price, p.Status, s.SupplierName
-    FROM ProductTable p
-    JOIN SupplierTable s ON p.SupplierID = s.SupplierID";
+    $stmt = $pdo->prepare(
+        "INSERT INTO InventoryTable (ProductID, ProductName, Quantity, Price, Status, SupplierName) 
+        SELECT p.UniqueID, p.ProductName, p.Quantity, p.Price, p.Status, s.SupplierName
+        FROM ProductTable p
+        JOIN SupplierTable s ON p.SupplierID = s.SupplierID"
+    );
 
     // Execute the insert statement
-    $pdo->exec($sql);
+    $stmt->execute();
     echo "Inventory table populated successfully\n";
+
 
     echo "Tables populated successfully\n";
 

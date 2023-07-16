@@ -29,7 +29,7 @@ In the same terminal, you can start the Apache service by typing:
 sudo service apache2 start
 ```
 
-Again, you can confirm that the service is running correctly:
+You can confirm that the service is running correctly:
 
 ```bash
 sudo service apache2 status
@@ -45,6 +45,7 @@ Navigate to the directory containing your PHP scripts in the terminal and run th
 
 ```bash
 php php/utils/createTables.php <root // or whatever is yours> <password // or whatever is yours>
+
 php php/utils/populateTables.php  <root // or whatever is yours> <password // or whatever is yours>
 ```
 
@@ -63,6 +64,14 @@ http://localhost/login.php
 You will now be able to log into the application by using your MySQL credentials. In this scenario, the username would be `root` and the password `password`.
 
 ## Notes
+
+- Ensure that the project is located in your /var/www/html directory. For example, in this demo, the path of the project is: `/var/www/html/CP-476` If you know the files are there, but still cannot `cd` into the directory, you may need to change the permissions of the directory using:
+
+```bash
+sudo chown -R your_username:your_username /var/www/html
+
+cd /var/www/html
+```
 
 - Remember to replace `password` with the actual password you set for your MySQL `root` user.
 - If the Apache or MySQL services are not starting, you might need to troubleshoot the permissions or check the configuration files for Apache and MySQL.

@@ -24,7 +24,7 @@ try {
             SupplierID INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
             SupplierName VARCHAR(255) NOT NULL,
             Address VARCHAR(255) NOT NULL,
-            Phone VARCHAR(15) NOT NULL,
+            Phone VARCHAR(25) NOT NULL,
             Email VARCHAR(255) NOT NULL UNIQUE
         )";
 
