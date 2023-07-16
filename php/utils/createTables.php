@@ -42,6 +42,7 @@ try {
         // SQL statement to create Product table
         $sql = "CREATE TABLE ProductTable (
             UniqueID INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+            ProductID INT(11) UNSIGNED,
             ProductName VARCHAR(255) NOT NULL,
             Description TEXT,
             Price DECIMAL(10, 2) NOT NULL,

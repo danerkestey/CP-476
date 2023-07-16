@@ -51,10 +51,12 @@ try {
     }
 
     // Prepare the SQL insert statement for the ProductTable
-    $stmt = $pdo->prepare("INSERT INTO ProductTable (ProductName, Description, Price, Quantity, Status, SupplierID) VALUES (:ProductName, :Description, :Price, :Quantity, :Status, :SupplierID)");
+    $stmt = $pdo->prepare("INSERT INTO ProductTable (ProductID, ProductName, Description, Price, Quantity, Status, SupplierID) 
+        VALUES (:ProductID, :ProductName, :Description, :Price, :Quantity, :Status, :SupplierID)");
 
     while (($row = fgetcsv($file)) !== false) {  // Read data from the CSV file line by line
         // Bind the parameters for the SQL insert statement
+        $stmt->bindValue(':ProductID', $row[0], PDO::PARAM_INT);
         $stmt->bindValue(':ProductName', $row[1], PDO::PARAM_STR);
         $stmt->bindValue(':Description', $row[2], PDO::PARAM_STR);
         
@@ -74,7 +76,7 @@ try {
     // Begin populating Inventory table
     $stmt = $pdo->prepare(
         "INSERT INTO InventoryTable (ProductID, ProductName, Quantity, Price, Status, SupplierName) 
-        SELECT p.UniqueID, p.ProductName, p.Quantity, p.Price, p.Status, s.SupplierName
+        SELECT p.ProductID, p.ProductName, p.Quantity, p.Price, p.Status, s.SupplierName
         FROM ProductTable p
         JOIN SupplierTable s ON p.SupplierID = s.SupplierID"
     );

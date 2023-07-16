@@ -45,7 +45,8 @@ Navigate to the directory containing your PHP scripts in the terminal and run th
 
 ```bash
 php php/utils/createTables.php <root // or whatever is yours> <password // or whatever is yours>
-
+```
+```bash
 php php/utils/populateTables.php  <root // or whatever is yours> <password // or whatever is yours>
 ```
 
@@ -69,7 +70,8 @@ You will now be able to log into the application by using your MySQL credentials
 
 ```bash
 sudo chown -R your_username:your_username /var/www/html
-
+```
+```bash
 cd /var/www/html
 ```
 
