@@ -15,7 +15,7 @@ $(document).ready(function() {
         }
 
         // If validation passes, send a POST request to the login PHP script
-        $.post('../../php/actions/login.php', {username: username, password: password}, function(response) {
+        $.post('/CP-476/php/actions/login.php', {username: username, password: password}, function(response) {
             console.log(response);
             // Parse the response JSON
             var data = JSON.parse(response);

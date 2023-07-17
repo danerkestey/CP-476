@@ -1,5 +1,5 @@
-# CP-476
-Simple CRUD app for our Internet Computing class that uses the LAMP stack.
+# CP-476 Project
+Simple CRUD app for our Internet Computing class that uses the LAMP stack, only meant for demo purposes to show interaction between server and db.
 
 # Guide for Setting up and Running the Application using WSL2 with Ubuntu
 
