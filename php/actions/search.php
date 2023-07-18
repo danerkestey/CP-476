@@ -2,10 +2,13 @@
 require_once '../utils/database.php';
 
 // Capture POST data
-$searchTerm = $_POST['searchTerm'];
+$searchTerm = isset($_POST['searchTerm']) ? $_POST['searchTerm'] : '';
 
-// Prepare a SQL statement to search for products in the ProductTable
-$stmt = $pdo->prepare("SELECT * FROM ProductTable WHERE ProductName LIKE :searchTerm");
+// Create a new PDO instance
+$pdo = getConnection();
+
+// Prepare a SQL statement to search for products in the InventoryTable
+$stmt = $pdo->prepare("SELECT * FROM InventoryTable WHERE ProductName LIKE :searchTerm");
 
 // Bind the parameters and execute the statement
 $stmt->bindValue(':searchTerm', '%'.$searchTerm.'%', PDO::PARAM_STR);
