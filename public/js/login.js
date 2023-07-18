@@ -16,17 +16,18 @@ $(document).ready(function() {
 
         // If validation passes, send a POST request to the login PHP script
         $.post('/CP-476/php/actions/login.php', {username: username, password: password}, function(response) {
-            console.log(response);
-            // Parse the response JSON
-            var data = JSON.parse(response);
-            console.log(data);
-            if (data.status === 'success') {
-                // If login successful, redirect to the app page
+            // If login successful, redirect to the app page
+            if (response.status === 'success') {
                 window.location.href = '/CP-476/public/html/app.html';
             } else {
                 // If login failed, display an error message
                 $('#message').text('Login failed. Please check your username and password and try again.');
             }
-        }, "json"); // JSON response
+        }, "json") // Expect a JSON response
+        .fail(function(jqXHR, textStatus, errorThrown) {
+            // Log any error messages
+            console.error("Request failed: " + textStatus + ", " + errorThrown);
+            console.error("Response: " + jqXHR.responseText); // REMOVE AFTER DEBUGGING
+        });
     });
 });

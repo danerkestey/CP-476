@@ -1,4 +1,9 @@
 <?php
+
+ini_set('display_errors', 1); // REMOVE AFTER DEBUGGING
+ini_set('display_startup_errors', 1); // REMOVE AFTER DEBUGGING
+error_reporting(E_ALL); // REMOVE AFTER DEBUGGING
+
 require_once '../utils/database.php';
 
 header('Content-Type: application/json');
@@ -16,8 +21,12 @@ try {
     // Initialize a PDO connection using the POSTed MySQL credentials
     $pdo = getConnection($username, $password);
 
-    // If the connection is successful, start the session and store username and password in it
-    session_start();
+    // Start a new session if one isn't already active
+    if (session_status() !== PHP_SESSION_ACTIVE) {
+        session_start();
+    }
+
+    // If the connection is successful, store the username and password in the session
     $_SESSION['username'] = $username; // Store username in session
     $_SESSION['password'] = $password; // Store password in session
     echo json_encode(['status' => 'success']);
