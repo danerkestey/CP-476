@@ -11,7 +11,41 @@
             <!-- Here you can place any buttons to trigger actions (e.g., delete, update...) -->
             <button id="refresh">Refresh</button>
         </div>
-        <table id="inventoryTable">
+
+        <table id="SupplierTable">
+            <thead>
+                <tr>
+                    <th>Supplier ID</th>
+                    <th>Supplier Name</th>
+                    <th>Address</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Rows will be inserted here dynamically with JavaScript -->
+            </tbody>
+        </table>
+
+        <table id="ProductTable">
+            <thead>
+                <tr>
+                    <th>Unique ID</th>
+                    <th>Product ID</th>
+                    <th>Product Name</th>
+                    <th>Description</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Status</th>
+                    <th>Supplier ID</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Rows will be inserted here dynamically with JavaScript -->
+            </tbody>
+        </table>
+
+        <table id="InventoryTable">
             <thead>
                 <tr>
                     <th>Product ID</th>
@@ -25,8 +59,9 @@
             <tbody>
                 <!-- Rows will be inserted here dynamically with JavaScript -->
             </tbody>
-        </table>
+        </table>  
     </div>
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="/CP-476/public/js/app.js"></script>
 </body>
