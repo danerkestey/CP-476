@@ -110,7 +110,6 @@
     <script>
         $(document).ready(function() {
             console.log('very very first console log');
-            alert('JavaScript file is running');
             console.log('Document ready');
 
             // This function gets data from the server and updates the table
@@ -155,6 +154,9 @@
                     });
                 });
             }
+
+            // Call the refreshData function when the page loads
+            refreshData();
 
             // This function sends the data from a form to the server
             function sendData(table, formData) {

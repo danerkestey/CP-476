@@ -35,6 +35,9 @@ if (!in_array($table, $validTables)) {
 log_message('INSERT: before getting connection');
 // Create a new PDO instance
 $pdo = getConnection();
+
+// Get table name
+$tableName = $table;
 log_message('INSERT: after getting connection');
 
 log_message('INSERT: before switch statement');
@@ -115,14 +118,24 @@ try{
 
 } catch(PDOException $e) {
     if ($e->getCode() == 23000) {
-        echo json_encode([
-            'status' => 'error',
-            'message' => 'Please add a supplier with this Supplier ID before adding it to the Product table.'
-        ]);
-        exit;
+        if ($tableName == 'Product') {
+            log_message('INSERT: inside catch, Product case');
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Please add a supplier with this Supplier ID before adding it to the Product table.'
+            ]);
+            exit;
+        } else if ($tableName == 'Supplier') {
+            log_message('INSERT: inside catch, Supplier case');
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Duplicate values entered, please enter unique values.'
+            ]);
+            exit;
+        }
 
     } else {
-        log_message('INSERT: inside catch, PDOException: ' . $e->getMessage() . 'error');
+        log_message('INSERT: inside catch ELSE of PDOException: ' . $e->getMessage() . 'error');
         // If there is an error when executing the statement, throw an exception
         echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
         echo error_log($e->getMessage());
