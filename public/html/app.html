@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Inventory App</title>
-    <link rel="stylesheet" type="text/css" href="/CP-476/public/css/styles.css">
+    <link rel="stylesheet" type="text/css" href="../css/styles.css">
 </head>
+
 <body>
     <div class="container">
         <h1>Welcome to the Inventory App</h1>
@@ -30,8 +32,8 @@
 
         <form id="SupplierForm">
             <h4>Add a Supplier</h4>
-            <label for="SupplierId">Supplier ID:</label>
-            <input type="number" id="SupplierId" name="SupplierId" required>
+            <label for="SupplierForm_SupplierId">Supplier ID:</label>
+            <input type="number" id="SupplierForm_SupplierId" name="SupplierForm_SupplierId" required>
             <label for="SupplierName">Supplier Name:</label>
             <input type="text" id="SupplierName" name="SupplierName" required>
             <label for="Address">Address:</label>
@@ -41,6 +43,7 @@
             <label for="Email">Email:</label>
             <input type="text" id="Email" name="Email" required>
             <button type="submit">Add Supplier</button>
+            <div id="supplierErrorMessage" style="color: red;"></div>
         </form>
 
         <br/>
@@ -65,6 +68,8 @@
 
         <form id="ProductForm">
             <h4>Add a Product</h4>
+            <label for="ProductID">Product ID:</label>
+            <input type="number" id="ProductID" name="ProductID" required>
             <label for="ProductName">Product Name:</label>
             <input type="text" id="ProductName" name="ProductName" required>
             <label for="Description">Description:</label>
@@ -75,9 +80,10 @@
             <input type="number" id="Quantity" name="Quantity" required>
             <label for="Status">Status:</label>
             <input type="text" id="Status" name="Status" required>
-            <label for="SupplierId">Supplier ID:</label>
-            <input type="number" id="SupplierId" name="SupplierId" required>
+            <label for="ProductForm_SupplierId">Supplier ID:</label>
+            <input type="number" id="ProductForm_SupplierId" name="ProductForm_SupplierId" required>
             <button type="submit">Add Product</button>
+            <div id="productErrorMessage" style="color: red;"></div>
         </form>
 
         <br/>
@@ -100,6 +106,141 @@
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="/CP-476/public/js/app.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            console.log('very very first console log');
+            alert('JavaScript file is running');
+            console.log('Document ready');
+
+            // This function gets data from the server and updates the table
+            function refreshData() {
+                const tables = {
+                    Inventory: ['ProductID', 'ProductName', 'Quantity', 'Price', 'Status', 'SupplierName'],
+                    Product: ['UniqueID', 'ProductID', 'ProductName', 'Description', 'Price', 'Quantity', 'Status', 'SupplierID'],
+                    Supplier: ['SupplierID', 'SupplierName', 'Address', 'Phone', 'Email']
+                };
+                
+                Object.keys(tables).forEach(table => {
+                    $.ajax({
+                        url: '/CP-476/php/actions/refresh.php',
+                        type: 'POST',
+                        data: { table: table },
+                        dataType: 'json',
+                        success: function(data) {
+                            // Clear the table
+                            $(`#${table}Table tbody`).empty();
+                
+                            if (data.status === "success") {
+                                // For each row, append it to the table
+                                data.results.forEach(function(row) {
+                                    let rowHtml = '<tr>';
+                
+                                    tables[table].forEach(function(column) {
+                                        rowHtml += `<td>${row[column]}</td>`;
+                                    });
+                
+                                    rowHtml += '</tr>';
+                
+                                    $(`#${table}Table tbody`).append(rowHtml);
+                                });
+                            } else {
+                                alert(data.message);
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("AJAX Error: " + status + "; " + error);
+                            console.error("Response: " + xhr.responseText);
+                        }
+                    });
+                });
+            }
+
+            // This function sends the data from a form to the server
+            function sendData(table, formData) {
+                $.ajax({
+                    url: '/CP-476/php/actions/insert.php',
+                    type: 'POST',
+                    data: { table: table, ...formData },
+                    dataType: 'json',
+                    success: function(data) {
+                        console.log('Data sent to server');
+                        if (data.status === "success") {
+                            refreshData();  // Refresh data on success
+                            // Clear form fields
+                            if(table === 'Product') {
+                                $('#ProductForm')[0].reset();
+                                // Clear any previous error message
+                                $('#productErrorMessage').text('');
+                            }
+                            if(table === 'Supplier') {
+                                $('#SupplierForm')[0].reset();
+                                // Clear any previous error message
+                                $('#supplierErrorMessage').text('');
+                            }
+                        } else {
+                            // Show error message
+                            if (table === 'Product') {
+                                $('#productErrorMessage').text(data.message);
+                            } else if (table === 'Supplier') {
+                                $('#supplierErrorMessage').text(data.message);
+                            } else {    
+                                alert(data.message);
+                            }
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.log('Error sending data to server');
+                        console.error("AJAX Error: " + status + "; " + error);
+                        console.error("Response: " + xhr.responseText);
+                        // Show generic error message
+                        if (table === 'Product') {
+                            $('#productErrorMessage').text('An unexpected error occurred. Please try again.');
+                        } else if (table == 'Supplier') {
+                            $('#supplierErrorMessage').text('An unexpected error occurred. Please try again.');
+                        }
+                        else {
+                            alert('An unexpected error occurred. Please try again.');
+                        }
+                    }
+                });
+            }
+
+            // Event Listeners for the Add Product and Add Supplier buttons
+            // Refreshes tables after data is inserted
+            $('#ProductForm, #SupplierForm').submit(function(event) {
+            console.log('Form before submission');
+            event.preventDefault();
+            
+            var formData = $(this).serializeArray().reduce(function(obj, item) {
+                obj[item.name] = item.value;
+                return obj;
+            }, {});
+
+            if (formData.hasOwnProperty('ProductForm_SupplierId')) {
+                formData['SupplierID'] = formData['ProductForm_SupplierId'];
+                delete formData['ProductForm_SupplierId'];
+            }
+
+            if (formData.hasOwnProperty('SupplierForm_SupplierId')) {
+                formData['SupplierID'] = formData['SupplierForm_SupplierId'];
+                delete formData['SupplierForm_SupplierId'];
+            }
+            
+            console.log(formData);
+            
+            var table = $(this).attr('id').replace('Form', '');
+            sendData(table, formData);
+            console.log('Form after submission');
+            });
+
+            // Call the refreshData function when the Refresh button is clicked
+            $('#refresh').click(function() {
+                console.log('Refresh button clicked');
+                refreshData();
+            });
+        });
+    </script>
+    <!--<script src="../js/app.js"></script>-->
 </body>
 </html>

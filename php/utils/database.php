@@ -1,4 +1,6 @@
 <?php
+require_once(__DIR__ . '/../utils/logger.php');
+log_message('DATABASE: at the start');
 // Start the session
 session_start();
 
