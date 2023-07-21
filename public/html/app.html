@@ -10,7 +10,6 @@
     <div class="container">
         <h1>Welcome to the Inventory App</h1>
         <div class="controls">
-            <!-- Here you can place any buttons to trigger actions (e.g., delete, update...) -->
             <button id="refresh">Refresh</button>
         </div>
 
@@ -134,18 +133,30 @@
                                 // For each row, append it to the table
                                 data.results.forEach(function(row) {
                                     let rowHtml = '<tr>';
-                
+
                                     tables[table].forEach(function(column) {
                                         rowHtml += `<td>${row[column]}</td>`;
                                     });
-                
+
+                                    // Add a delete button at the end of each row, except for Inventory table
+                                    if (table !== "Inventory") {
+                                        let uniqueId;
+                                        if (table === "Supplier") {
+                                            uniqueId = row['SupplierID'];
+                                        } else if (table === "Product") {
+                                            uniqueId = row['ProductID'];
+                                        }
+                                        rowHtml += `<td><button class="delete-button" data-id="${uniqueId}">Delete Entry</button></td>`;
+                                    }
+
                                     rowHtml += '</tr>';
-                
+
                                     $(`#${table}Table tbody`).append(rowHtml);
                                 });
                             } else {
                                 alert(data.message);
                             }
+
                         },
                         error: function(xhr, status, error) {
                             console.error("AJAX Error: " + status + "; " + error);
@@ -240,6 +251,21 @@
             $('#refresh').click(function() {
                 console.log('Refresh button clicked');
                 refreshData();
+            });
+
+            // Event listener for the delete button
+            $('body').on('click', '.delete-button', function() {
+                var id = $(this).data('id');
+                var table = $(this).parents('table').attr('id').replace('Table', '');
+                $.post("/CP-476/php/actions/delete.php", { table: table, id: id }, function(data) {
+                    // Display a success message, or handle errors
+                    if(data.status === 'success') {
+                        alert('Entry deleted successfully');
+                        refreshData(); // Refresh the tables to update them
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                }, 'json');
             });
         });
     </script>
