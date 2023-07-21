@@ -11,6 +11,10 @@ body {
     overflow: hidden;
 }
 
+.hidden {
+    display: none !important;
+}
+
 #header {
     background-color: #35424a;
     color: #ffffff;

@@ -50,7 +50,7 @@
         <table id="ProductTable">
             <thead>
                 <tr>
-                    <th>Unique ID</th>
+                    <!-- <th>Unique ID</th> -->
                     <th>Product ID</th>
                     <th>Product Name</th>
                     <th>Description</th>
@@ -128,35 +128,52 @@
                         success: function(data) {
                             // Clear the table
                             $(`#${table}Table tbody`).empty();
-                
+                            $(`#${table}Table thead`).empty();
+
                             if (data.status === "success") {
+                                // Generate table headers
+                                let headerHtml = '<tr>';
+                                tables[table].forEach(function(column) {
+                                    if(column === 'UniqueID') {
+                                        headerHtml += `<th class="hidden">${column}</th>`;
+                                    } else {
+                                        headerHtml += `<th>${column}</th>`;
+                                    }
+                                });
+                                if (table !== "Inventory") {
+                                    headerHtml += `<th>Action</th>`;
+                                }
+                                headerHtml += '</tr>';
+                                $(`#${table}Table thead`).append(headerHtml);
+
                                 // For each row, append it to the table
                                 data.results.forEach(function(row) {
                                     let rowHtml = '<tr>';
-
                                     tables[table].forEach(function(column) {
-                                        rowHtml += `<td>${row[column]}</td>`;
+                                        if(column === 'UniqueID') {
+                                            rowHtml += `<td class="hidden">${row[column]}</td>`;
+                                        } else {
+                                            rowHtml += `<td>${row[column]}</td>`;
+                                        }
                                     });
 
                                     // Add a delete button at the end of each row, except for Inventory table
                                     if (table !== "Inventory") {
-                                        let uniqueId;
+                                        let UniqueID;
                                         if (table === "Supplier") {
-                                            uniqueId = row['SupplierID'];
+                                            UniqueID = row['SupplierID'];
                                         } else if (table === "Product") {
-                                            uniqueId = row['ProductID'];
+                                            UniqueID = row['ProductID'];
                                         }
-                                        rowHtml += `<td><button class="delete-button" data-id="${uniqueId}">Delete Entry</button></td>`;
+                                        rowHtml += `<td><button class="delete-button" data-id="${UniqueID}">Delete Entry</button></td>`;
                                     }
 
                                     rowHtml += '</tr>';
-
                                     $(`#${table}Table tbody`).append(rowHtml);
                                 });
                             } else {
                                 alert(data.message);
                             }
-
                         },
                         error: function(xhr, status, error) {
                             console.error("AJAX Error: " + status + "; " + error);
