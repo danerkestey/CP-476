@@ -58,6 +58,7 @@
                     <th>Quantity</th>
                     <th>Status</th>
                     <th>Supplier ID</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -111,6 +112,40 @@
             console.log('very very first console log');
             console.log('Document ready');
 
+
+
+
+                // Event listener for the update button on the Product table
+            $('body').on('click', '.update-button', function() {
+                var productID = $(this).data('id');
+                var newQuantity = $(this).parent().prev().find('.update-field').val(); // Get the new quantity from the input box
+
+                // Send the updated quantity to the server using AJAX
+                $.ajax({
+                    url: '/CP-476/php/actions/update.php',
+                    type: 'POST',
+                    data: { productID: productID, quantity: newQuantity },
+                    dataType: 'json',
+                    success: function(data) {
+                        if (data.status === "success") {
+                            alert(data.message); // Show success message
+                            refreshData(); // Refresh the Product table to update the data
+                        } else {
+                            alert(data.message); // Show error message
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("AJAX Error: " + status + "; " + error);
+                        console.error("Response: " + xhr.responseText);
+                        alert('An unexpected error occurred. Please try again.');
+                    }
+                });
+            });
+
+
+
+
+
             // This function gets data from the server and updates the table
             function refreshData() {
                 const tables = {
@@ -118,45 +153,58 @@
                     Product: ['UniqueID', 'ProductID', 'ProductName', 'Description', 'Price', 'Quantity', 'Status', 'SupplierID'],
                     Supplier: ['SupplierID', 'SupplierName', 'Address', 'Phone', 'Email']
                 };
-                
+            
                 Object.keys(tables).forEach(table => {
                     $.ajax({
                         url: '/CP-476/php/actions/refresh.php',
                         type: 'POST',
                         data: { table: table },
                         dataType: 'json',
-                        success: function(data) {
+                        success: function (data) {
                             // Clear the table
                             $(`#${table}Table tbody`).empty();
                             $(`#${table}Table thead`).empty();
-
+            
                             if (data.status === "success") {
                                 // Generate table headers
                                 let headerHtml = '<tr>';
-                                tables[table].forEach(function(column) {
-                                    if(column === 'UniqueID') {
+                                tables[table].forEach(function (column) {
+                                    if (column === 'UniqueID') {
                                         headerHtml += `<th class="hidden">${column}</th>`;
                                     } else {
                                         headerHtml += `<th>${column}</th>`;
                                     }
                                 });
+            
+                                // Add the "Quantity" column header
+                                if (table === "Product") {
+                                    headerHtml += `<th>Quantity</th>`;
+                                    headerHtml += `<th>Update</th>`; // Add the header for the Update button
+                                }
+            
                                 if (table !== "Inventory") {
                                     headerHtml += `<th>Action</th>`;
                                 }
                                 headerHtml += '</tr>';
                                 $(`#${table}Table thead`).append(headerHtml);
-
+            
                                 // For each row, append it to the table
-                                data.results.forEach(function(row) {
+                                data.results.forEach(function (row) {
                                     let rowHtml = '<tr>';
-                                    tables[table].forEach(function(column) {
-                                        if(column === 'UniqueID') {
+                                    tables[table].forEach(function (column) {
+                                        if (column === 'UniqueID') {
                                             rowHtml += `<td class="hidden">${row[column]}</td>`;
                                         } else {
                                             rowHtml += `<td>${row[column]}</td>`;
                                         }
                                     });
-
+            
+                                    // Add the text box for the "Quantity" column
+                                    if (table === "Product") {
+                                        rowHtml += `<td><input type="text" class="update-field" value="" /></td>`; // Leave the value blank
+                                        rowHtml += `<td><button class="update-button" data-id="${row['ProductID']}">Update</button></td>`; // Add the Update button
+                                    }
+            
                                     // Add a delete button at the end of each row, except for Inventory table
                                     if (table !== "Inventory") {
                                         let UniqueID;
@@ -167,7 +215,7 @@
                                         }
                                         rowHtml += `<td><button class="delete-button" data-id="${UniqueID}">Delete Entry</button></td>`;
                                     }
-
+            
                                     rowHtml += '</tr>';
                                     $(`#${table}Table tbody`).append(rowHtml);
                                 });
@@ -175,13 +223,14 @@
                                 alert(data.message);
                             }
                         },
-                        error: function(xhr, status, error) {
+                        error: function (xhr, status, error) {
                             console.error("AJAX Error: " + status + "; " + error);
                             console.error("Response: " + xhr.responseText);
                         }
                     });
                 });
             }
+            
 
             // Call the refreshData function when the page loads
             refreshData();
