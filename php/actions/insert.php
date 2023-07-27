@@ -5,6 +5,20 @@ log_message('INSERT: at the start');
 ini_set('display_errors', 0);
 error_reporting(0);
 
+// Define a list of restricted words (SQL keywords or statements)
+$restrictedWords = array('SELECT', 'INSERT', 'UPDATE', 'DELETE', 'DROP', 'TRUNCATE', 'ALTER', 'CREATE', 'TABLE', 'DATABASE');
+
+// Function to check if the input contains any restricted word
+function containsRestrictedWord($input) {
+    global $restrictedWords;
+    foreach ($restrictedWords as $word) {
+        if (stripos($input, $word) !== false) {
+            return true;
+        }
+    }
+    return false;
+}
+
 // Catch all errors and exceptions
 set_error_handler(function($errno, $errstr, $errfile, $errline) {
     log_message('error in set_error_handler: ' . $errstr . ' in ' . $errfile . ' on line ' . $errline . 'error');
@@ -30,6 +44,15 @@ if (!in_array($table, $validTables)) {
     log_message('Invalid table: ' . $table . 'error');
     echo json_encode(['status' => 'error', 'message' => 'Invalid table']);
     exit;
+}
+
+// Check for restricted words in the input data
+foreach ($_POST as $key => $value) {
+    if (containsRestrictedWord($value)) {
+        log_message('Restricted word found: ' . $value . 'error');
+        echo json_encode(['status' => 'error', 'message' => 'Invalid input: Restricted word found']);
+        exit;
+    }
 }
 
 log_message('INSERT: before getting connection');
