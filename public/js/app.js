@@ -1,11 +1,5 @@
 $(document).ready(function() {
-    console.log('very very first console log');
-    console.log('Document ready');
-
-
-
-
-        // Event listener for the update button on the Product table
+    // Event listener for the update button on the Product table
     $('body').on('click', '.update-button', function() {
         var productID = $(this).data('id');
         var newQuantity = $(this).parent().prev().find('.update-field').val(); // Get the new quantity from the input box
