@@ -1,8 +1,4 @@
-console.log('very very first console log');
-alert('JavaScript file is running');
 $(document).ready(function() {
-    console.log('Document ready');
-
     // This function gets data from the server and updates the table
     function refreshData() {
         const tables = {
